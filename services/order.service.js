@@ -1,8 +1,12 @@
-const boom = require('@hapi/boom');
+// const boom = require('@hapi/boom');
+
+const pool = require('../libs/postgres.pool');
 
 class OrderService {
 
-  constructor(){
+  constructor() {
+    this.pool = pool;
+    this.pool.on('error', (err) => console.error(err));
   }
   async create(data) {
     return data;
@@ -26,7 +30,6 @@ class OrderService {
   async delete(id) {
     return { id };
   }
-
 }
 
 module.exports = OrderService;

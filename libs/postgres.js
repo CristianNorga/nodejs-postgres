@@ -1,5 +1,4 @@
 const { Client } = require('pg');
-require('dotenv').config();
 
 async function getConnection(){
   const client = new Client({
