@@ -1,3 +1,5 @@
+const { ValidationError } = require('sequelize');
+
 function logErrors (err, req, res, next) {
   console.error(err);
   next(err);
@@ -19,12 +21,13 @@ function boomErrorHandler(err, req, res, next) {
   }
 }
 
-function queryErrorHandler(err, req, res, next) {
-  if (err.name === 'SequelizeUniqueConstraintError') {
-    const { fields, parent } = err;
-    res.status(400).json({
-      fields: fields,
-      message: parent.detail,
+function ormErrorHandler(err, req, res, next) {
+  if (err instanceof ValidationError) {
+    const { name, errors } = err;
+    res.status(409).json({
+      statusCode: 409,
+      message: name,
+      errors: errors,
     });
   } else {
     next(err);
@@ -36,5 +39,5 @@ module.exports = {
   logErrors,
   errorHandler,
   boomErrorHandler,
-  queryErrorHandler,
+  ormErrorHandler,
 };
