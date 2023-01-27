@@ -1,33 +1,37 @@
-// const boom = require('@hapi/boom');
+const boom = require('@hapi/boom');
 
-const pool = require('../libs/postgres.pool');
+const { models } = require('./../libs/sequelize');
 
 class OrderService {
+  constructor() {}
 
-  constructor() {
-    this.pool = pool;
-    this.pool.on('error', (err) => console.error(err));
-  }
   async create(data) {
-    return data;
+    const newOrder = await models.Order.create(data);
+    return newOrder;
   }
 
   async find() {
-    return [];
+    const orders = await models.Order.findAll();
+    return orders;
   }
 
   async findOne(id) {
-    return { id };
+    const order = await models.Order.findByPk(id);
+    if (!order) {
+      throw boom.notFound('order not found');
+    }
+    return order;
   }
 
   async update(id, changes) {
-    return {
-      id,
-      changes,
-    };
+    const order = await this.findOne(id);
+    const rta = await order.update(changes);
+    return rta;
   }
 
   async delete(id) {
+    const order = await this.findOne(id);
+    await order.destroy();
     return { id };
   }
 }
